@@ -1,0 +1,48 @@
+version: v1
+plugins:
+  - name: go
+    out: pkg/pb
+    opt:
+      - paths=source_relative
+      - module=github.com/sambacha/disco2/v2
+      - Mapi/proto/balance.proto=github.com/sambacha/disco2/v2/pkg/pb/balance
+      - Mapi/proto/card_processing.proto=github.com/sambacha/disco2/v2/pkg/pb/cardprocessing
+      - Mapi/proto/cards.proto=github.com/sambacha/disco2/v2/pkg/pb/cards
+      - Mapi/proto/disco_payment_gateway.proto=github.com/sambacha/disco2/v2/pkg/pb/disco
+      - Mapi/proto/feed.proto=github.com/sambacha/disco2/v2/pkg/pb/feed
+      - Mapi/proto/merchant.proto=github.com/sambacha/disco2/v2/pkg/pb/merchant
+      - Mapi/proto/transactions.proto=github.com/sambacha/disco2/v2/pkg/pb/transactions
+
+  - name: go-grpc
+    out: pkg/pb
+    opt:
+      - paths=source_relative
+      - module=github.com/sambacha/disco2/v2
+      - Mapi/proto/balance.proto=github.com/sambacha/disco2/v2/pkg/pb/balance
+      - Mapi/proto/card_processing.proto=github.com/sambacha/disco2/v2/pkg/pb/cardprocessing
+      - Mapi/proto/cards.proto=github.com/sambacha/disco2/v2/pkg/pb/cards
+      - Mapi/proto/disco_payment_gateway.proto=github.com/sambacha/disco2/v2/pkg/pb/disco
+      - Mapi/proto/feed.proto=github.com/sambacha/disco2/v2/pkg/pb/feed
+      - Mapi/proto/merchant.proto=github.com/sambacha/disco2/v2/pkg/pb/merchant
+      - Mapi/proto/transactions.proto=github.com/sambacha/disco2/v2/pkg/pb/transactions
+
+  - name: grpc-gateway
+    out: pkg/pb
+    opt:
+      - paths=source_relative
+      - module=github.com/sambacha/disco2/v2
+      - logtostderr=true
+      - generate_unbound_methods=true
+      - Mapi/proto/balance.proto=github.com/sambacha/disco2/v2/pkg/pb/balance
+      - Mapi/proto/card_processing.proto=github.com/sambacha/disco2/v2/pkg/pb/cardprocessing
+      - Mapi/proto/cards.proto=github.com/sambacha/disco2/v2/pkg/pb/cards
+      - Mapi/proto/disco_payment_gateway.proto=github.com/sambacha/disco2/v2/pkg/pb/disco
+      - Mapi/proto/feed.proto=github.com/sambacha/disco2/v2/pkg/pb/feed
+      - Mapi/proto/merchant.proto=github.com/sambacha/disco2/v2/pkg/pb/merchant
+      - Mapi/proto/transactions.proto=github.com/sambacha/disco2/v2/pkg/pb/transactions
+
+  - name: openapiv2
+    out: docs/openapi
+    opt:
+      - logtostderr=true
+      - generate_unbound_methods=true
