@@ -1,0 +1,197 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "cards.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Cards"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/Cards/CreateCard": {
+      "post": {
+        "operationId": "Cards_CreateCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Card"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateCardRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Cards"
+        ]
+      }
+    },
+    "/Cards/GetCard": {
+      "post": {
+        "operationId": "Cards_GetCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Card"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetCardRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Cards"
+        ]
+      }
+    },
+    "/Cards/UpdateCardStatus": {
+      "post": {
+        "operationId": "Cards_UpdateCardStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Card"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateCardStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Cards"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Card": {
+      "type": "object",
+      "properties": {
+        "cardId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "title": "e.g., \"ACTIVE\", \"INACTIVE\", \"FROZEN\", \"CLOSED\""
+        },
+        "lastFour": {
+          "type": "string",
+          "title": "pan_hash and cvv_hash are not included as per spec security notes"
+        }
+      }
+    },
+    "CreateCardRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "cardType": {
+          "type": "string",
+          "title": "e.g., \"physical\", \"virtual\""
+        }
+      }
+    },
+    "GetCardRequest": {
+      "type": "object",
+      "properties": {
+        "cardId": {
+          "type": "string"
+        }
+      }
+    },
+    "UpdateCardStatusRequest": {
+      "type": "object",
+      "properties": {
+        "cardId": {
+          "type": "string"
+        },
+        "newStatus": {
+          "type": "string",
+          "title": "e.g., \"ACTIVE\", \"FROZEN\""
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

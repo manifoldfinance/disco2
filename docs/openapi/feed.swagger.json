@@ -1,0 +1,235 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "feed.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Feed"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/Feed/AddFeedItem": {
+      "post": {
+        "operationId": "Feed_AddFeedItem",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FeedItem"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddFeedItemRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Feed"
+        ]
+      }
+    },
+    "/Feed/GetFeedItemsByID": {
+      "post": {
+        "summary": "Added based on spec prompt",
+        "operationId": "Feed_GetFeedItemsByID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FeedItems"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FeedItemIDs"
+            }
+          }
+        ],
+        "tags": [
+          "Feed"
+        ]
+      }
+    },
+    "/Feed/ListFeedItems": {
+      "post": {
+        "operationId": "Feed_ListFeedItems",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FeedItems"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListFeedItemsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Feed"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "AddFeedItemRequest": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "refId": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "title": "timestamp of the event"
+        }
+      }
+    },
+    "FeedItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "title": "e.g., \"TRANSACTION\", \"CARD_STATUS\", \"MESSAGE\""
+        },
+        "timestamp": {
+          "type": "string",
+          "title": "ISO 8601 string or similar"
+        },
+        "content": {
+          "type": "string",
+          "title": "human-readable content or summary"
+        },
+        "refId": {
+          "type": "string",
+          "title": "reference to another entity, e.g., transaction_id"
+        }
+      }
+    },
+    "FeedItemIDs": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "list of feed item IDs to retrieve"
+        }
+      }
+    },
+    "FeedItems": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/FeedItem"
+          }
+        }
+      }
+    },
+    "ListFeedItemsRequest": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "beforeId": {
+          "type": "string",
+          "title": "pagination cursor (feed item ID)"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

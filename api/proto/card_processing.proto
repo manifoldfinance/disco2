@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option go_package = "./card_processing";
+
+service CardProcessing {
+    rpc AuthorizeCardTransaction(CardAuthRequest) returns (CardAuthReply);
+}
+
+message CardAuthRequest {
+    string card_id = 1;
+    int64 amount = 2; // amount in cents
+    string currency = 3;
+    string merchant_id = 4; // optional merchant ID
+    string merchant_name = 5; // raw merchant name
+}
+
+message CardAuthReply {
+    bool approved = 1;
+    string decline_reason = 2; // reason if not approved
+}

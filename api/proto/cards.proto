@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option go_package = "./cards";
+
+service Cards {
+    rpc CreateCard(CreateCardRequest) returns (Card);
+    rpc GetCard(GetCardRequest) returns (Card);
+    rpc UpdateCardStatus(UpdateCardStatusRequest) returns (Card);
+}
+
+message Card {
+    string card_id = 1;
+    string user_id = 2;
+    string status = 3; // e.g., "ACTIVE", "INACTIVE", "FROZEN", "CLOSED"
+    string last_four = 4;
+    // pan_hash and cvv_hash are not included as per spec security notes
+}
+
+message CreateCardRequest {
+    string user_id = 1;
+    string card_type = 2; // e.g., "physical", "virtual"
+}
+
+message GetCardRequest {
+    string card_id = 1;
+}
+
+message UpdateCardStatusRequest {
+    string card_id = 1;
+    string new_status = 2; // e.g., "ACTIVE", "FROZEN"
+}

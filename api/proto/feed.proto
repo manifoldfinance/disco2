@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option go_package = "./feed";
+
+service Feed {
+  rpc AddFeedItem(AddFeedItemRequest) returns (FeedItem);
+  rpc ListFeedItems(ListFeedItemsRequest) returns (FeedItems);
+  rpc GetFeedItemsByID(FeedItemIDs) returns (FeedItems); // Added based on spec prompt
+}
+
+message FeedItem {
+    string id = 1;
+    string account_id = 2;
+    string type = 3; // e.g., "TRANSACTION", "CARD_STATUS", "MESSAGE"
+    string timestamp = 4; // ISO 8601 string or similar
+    string content = 5; // human-readable content or summary
+    string ref_id = 6; // reference to another entity, e.g., transaction_id
+    // Additional structured data could be added here if needed
+}
+
+message AddFeedItemRequest {
+    string account_id = 1;
+    string type = 2;
+    string content = 3;
+    string ref_id = 4;
+    string timestamp = 5; // timestamp of the event
+}
+
+message FeedItems {
+    repeated FeedItem items = 1;
+}
+
+message ListFeedItemsRequest {
+    string account_id = 1;
+    uint32 limit = 2;
+    string before_id = 3; // pagination cursor (feed item ID)
+}
+
+message FeedItemIDs {
+    repeated string ids = 1; // list of feed item IDs to retrieve
+}

@@ -1,0 +1,217 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "merchant.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Merchant"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/Merchant/FindOrCreateMerchant": {
+      "post": {
+        "operationId": "Merchant_FindOrCreateMerchant",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/MerchantData"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MerchantQuery"
+            }
+          }
+        ],
+        "tags": [
+          "Merchant"
+        ]
+      }
+    },
+    "/Merchant/GetMerchant": {
+      "post": {
+        "operationId": "Merchant_GetMerchant",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/MerchantData"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MerchantID"
+            }
+          }
+        ],
+        "tags": [
+          "Merchant"
+        ]
+      }
+    },
+    "/Merchant/UpdateMerchant": {
+      "post": {
+        "operationId": "Merchant_UpdateMerchant",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/MerchantData"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateMerchantRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Merchant"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "MerchantData": {
+      "type": "object",
+      "properties": {
+        "merchantId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "logoUrl": {
+          "type": "string"
+        },
+        "mcc": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Merchant Category Code"
+        }
+      }
+    },
+    "MerchantID": {
+      "type": "object",
+      "properties": {
+        "merchantId": {
+          "type": "string"
+        }
+      }
+    },
+    "MerchantQuery": {
+      "type": "object",
+      "properties": {
+        "rawName": {
+          "type": "string"
+        },
+        "mcc": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "city": {
+          "type": "string",
+          "title": "optional city for lookup"
+        }
+      }
+    },
+    "UpdateMerchantRequest": {
+      "type": "object",
+      "properties": {
+        "merchantId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "title": "optional new name"
+        },
+        "category": {
+          "type": "string",
+          "title": "optional new category"
+        },
+        "logoUrl": {
+          "type": "string",
+          "title": "optional new logo URL"
+        },
+        "mcc": {
+          "type": "integer",
+          "format": "int32",
+          "title": "optional new MCC"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

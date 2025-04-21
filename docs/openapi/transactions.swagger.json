@@ -1,0 +1,322 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "transactions.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Transactions"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/Transactions/GetTransaction": {
+      "post": {
+        "operationId": "Transactions_GetTransaction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Transaction"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TransactionQuery"
+            }
+          }
+        ],
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/Transactions/ListTransactions": {
+      "post": {
+        "operationId": "Transactions_ListTransactions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/TransactionsList"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TransactionsQuery"
+            }
+          }
+        ],
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/Transactions/RecordTransaction": {
+      "post": {
+        "operationId": "Transactions_RecordTransaction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Transaction"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TransactionInput"
+            }
+          }
+        ],
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/Transactions/UpdateTransaction": {
+      "post": {
+        "summary": "Added based on spec prompt",
+        "operationId": "Transactions_UpdateTransaction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Transaction"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateTransactionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Transactions"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Transaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "cardId": {
+          "type": "string",
+          "title": "optional"
+        },
+        "amount": {
+          "type": "string",
+          "format": "int64",
+          "title": "amount in cents"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "merchantId": {
+          "type": "string",
+          "title": "optional"
+        },
+        "merchantName": {
+          "type": "string",
+          "title": "optional"
+        },
+        "timestamp": {
+          "type": "string",
+          "title": "ISO 8601 string or similar"
+        },
+        "status": {
+          "type": "string",
+          "title": "e.g., \"AUTHORIZED\", \"SETTLED\", \"REVERSED\""
+        },
+        "merchantRaw": {
+          "type": "string",
+          "title": "raw merchant description"
+        },
+        "category": {
+          "type": "string",
+          "title": "optional category"
+        }
+      }
+    },
+    "TransactionInput": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "type": "string"
+        },
+        "cardId": {
+          "type": "string",
+          "title": "optional"
+        },
+        "amount": {
+          "type": "string",
+          "format": "int64",
+          "title": "amount in cents"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "merchantId": {
+          "type": "string",
+          "title": "optional"
+        },
+        "merchantRaw": {
+          "type": "string",
+          "title": "raw merchant description"
+        },
+        "status": {
+          "type": "string",
+          "title": "initial status, e.g., \"AUTHORIZED\""
+        }
+      }
+    },
+    "TransactionQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "query by transaction ID"
+        }
+      }
+    },
+    "TransactionsList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Transaction"
+          }
+        }
+      }
+    },
+    "TransactionsQuery": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "type": "string",
+          "title": "query by account ID"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int64",
+          "title": "pagination limit"
+        },
+        "beforeId": {
+          "type": "string",
+          "title": "pagination cursor (transaction ID)"
+        }
+      }
+    },
+    "UpdateTransactionRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "transaction ID to update"
+        },
+        "merchantId": {
+          "type": "string",
+          "title": "optional new merchant ID"
+        },
+        "merchantName": {
+          "type": "string",
+          "title": "optional new merchant name"
+        },
+        "category": {
+          "type": "string",
+          "title": "optional new category"
+        },
+        "status": {
+          "type": "string",
+          "title": "optional new status"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

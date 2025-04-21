@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+option go_package = "./disco_payment_gateway";
+
+service DiscoPaymentGateway {
+    rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
+    rpc GetSessionById(GetSessionByIdRequest) returns (GetSessionResponse);
+    rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
+    rpc GetSessionByPaymentTransaction(GetSessionByPaymentTransactionRequest) returns (GetSessionResponse);
+    rpc CreateWallet(CreateWalletRequest) returns (CreateWalletResponse);
+    rpc EstimatePaymentAmount(EstimatePaymentAmountRequest) returns (EstimatePaymentAmountResponse);
+    // Add other endpoints later
+}
+
+message CreateSessionRequest {
+    // Based on GLIDE.md, request body contains payment parameters and blockchain data
+    // Define fields based on typical payment session creation needs
+    string user_id = 1; // Assuming a link to our internal user
+    string currency = 2; // Target currency for payment
+    int64 amount = 3; // Target amount in minor units
+    string redirect_url = 4; // URL to redirect after payment
+    // Add more fields as needed based on external API docs (e.g., blockchain details)
+}
+
+message CreateSessionResponse {
+    string session_id = 1;
+    string status = 2; // e.g., "pending", "ready"
+    string payment_url = 3; // URL for the user to complete payment
+    // Add more fields as needed
+}
+
+message GetSessionByIdRequest {
+    string session_id = 1;
+}
+
+message GetSessionByPaymentTransactionRequest {
+    string payment_transaction_hash = 1;
+}
+
+message GetSessionResponse {
+    string session_id = 1;
+    string status = 2;
+    string user_id = 3;
+    string currency = 4;
+    int64 amount = 5;
+    string payment_transaction_hash = 6; // Optional, if linked
+    // Add more fields as needed
+}
+
+message ListSessionsRequest {
+    string user_id = 1; // Filter by user
+    string status = 2; // Filter by status (optional)
+    int32 limit = 3; // Pagination limit (optional)
+    string cursor = 4; // Pagination cursor (optional)
+}
+
+message ListSessionsResponse {
+    repeated GetSessionResponse sessions = 1; // Reuse GetSessionResponse for items
+    string next_cursor = 2; // For pagination (optional)
+}
+
+message CreateWalletRequest {
+    string user_id = 1; // Link to our internal user
+    // Add more fields as needed based on external API docs (e.g., chain)
+}
+
+message CreateWalletResponse {
+    string wallet_address = 1;
+    // Add more fields as needed (e.g., chain)
+}
+
+message EstimatePaymentAmountRequest {
+    string target_currency = 1;
+    int64 target_amount = 2; // Amount in target currency minor units
+    string source_currency = 3; // Currency user will pay with (optional)
+    // Add more fields as needed (e.g., chain)
+}
+
+message EstimatePaymentAmountResponse {
+    int64 estimated_amount = 1; // Amount in source currency minor units
+    string source_currency = 2;
+    // Add more fields as needed (e.g., fees, expiry)
+}

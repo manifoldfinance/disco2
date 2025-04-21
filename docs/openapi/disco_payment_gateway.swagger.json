@@ -1,0 +1,411 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "disco_payment_gateway.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "DiscoPaymentGateway"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/DiscoPaymentGateway/CreateSession": {
+      "post": {
+        "operationId": "DiscoPaymentGateway_CreateSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateSessionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateSessionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DiscoPaymentGateway"
+        ]
+      }
+    },
+    "/DiscoPaymentGateway/CreateWallet": {
+      "post": {
+        "operationId": "DiscoPaymentGateway_CreateWallet",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateWalletResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateWalletRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DiscoPaymentGateway"
+        ]
+      }
+    },
+    "/DiscoPaymentGateway/EstimatePaymentAmount": {
+      "post": {
+        "summary": "Add other endpoints later",
+        "operationId": "DiscoPaymentGateway_EstimatePaymentAmount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/EstimatePaymentAmountResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EstimatePaymentAmountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DiscoPaymentGateway"
+        ]
+      }
+    },
+    "/DiscoPaymentGateway/GetSessionById": {
+      "post": {
+        "operationId": "DiscoPaymentGateway_GetSessionById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetSessionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetSessionByIdRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DiscoPaymentGateway"
+        ]
+      }
+    },
+    "/DiscoPaymentGateway/GetSessionByPaymentTransaction": {
+      "post": {
+        "operationId": "DiscoPaymentGateway_GetSessionByPaymentTransaction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetSessionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetSessionByPaymentTransactionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DiscoPaymentGateway"
+        ]
+      }
+    },
+    "/DiscoPaymentGateway/ListSessions": {
+      "post": {
+        "operationId": "DiscoPaymentGateway_ListSessions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListSessionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListSessionsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DiscoPaymentGateway"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "CreateSessionRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Assuming a link to our internal user",
+          "title": "Based on GLIDE.md, request body contains payment parameters and blockchain data\nDefine fields based on typical payment session creation needs"
+        },
+        "currency": {
+          "type": "string",
+          "title": "Target currency for payment"
+        },
+        "amount": {
+          "type": "string",
+          "format": "int64",
+          "title": "Target amount in minor units"
+        },
+        "redirectUrl": {
+          "type": "string",
+          "title": "URL to redirect after payment"
+        }
+      }
+    },
+    "CreateSessionResponse": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "title": "e.g., \"pending\", \"ready\""
+        },
+        "paymentUrl": {
+          "type": "string",
+          "title": "URL for the user to complete payment"
+        }
+      }
+    },
+    "CreateWalletRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "title": "Link to our internal user"
+        }
+      }
+    },
+    "CreateWalletResponse": {
+      "type": "object",
+      "properties": {
+        "walletAddress": {
+          "type": "string",
+          "title": "Add more fields as needed (e.g., chain)"
+        }
+      }
+    },
+    "EstimatePaymentAmountRequest": {
+      "type": "object",
+      "properties": {
+        "targetCurrency": {
+          "type": "string"
+        },
+        "targetAmount": {
+          "type": "string",
+          "format": "int64",
+          "title": "Amount in target currency minor units"
+        },
+        "sourceCurrency": {
+          "type": "string",
+          "title": "Currency user will pay with (optional)"
+        }
+      }
+    },
+    "EstimatePaymentAmountResponse": {
+      "type": "object",
+      "properties": {
+        "estimatedAmount": {
+          "type": "string",
+          "format": "int64",
+          "title": "Amount in source currency minor units"
+        },
+        "sourceCurrency": {
+          "type": "string",
+          "title": "Add more fields as needed (e.g., fees, expiry)"
+        }
+      }
+    },
+    "GetSessionByIdRequest": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string"
+        }
+      }
+    },
+    "GetSessionByPaymentTransactionRequest": {
+      "type": "object",
+      "properties": {
+        "paymentTransactionHash": {
+          "type": "string"
+        }
+      }
+    },
+    "GetSessionResponse": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "paymentTransactionHash": {
+          "type": "string",
+          "title": "Optional, if linked"
+        }
+      }
+    },
+    "ListSessionsRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "title": "Filter by user"
+        },
+        "status": {
+          "type": "string",
+          "title": "Filter by status (optional)"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Pagination limit (optional)"
+        },
+        "cursor": {
+          "type": "string",
+          "title": "Pagination cursor (optional)"
+        }
+      }
+    },
+    "ListSessionsResponse": {
+      "type": "object",
+      "properties": {
+        "sessions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/GetSessionResponse"
+          },
+          "title": "Reuse GetSessionResponse for items"
+        },
+        "nextCursor": {
+          "type": "string",
+          "title": "For pagination (optional)"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
