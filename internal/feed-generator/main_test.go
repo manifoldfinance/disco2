@@ -74,7 +74,7 @@ func (m *mockFeedClient) GetFeedItemsByID(ctx context.Context, in *feedpb.FeedIt
 func newTestServer(t *testing.T) (*server, *mockTransactionsClient, *mockFeedClient) {
 	mockTxnClient := new(mockTransactionsClient)
 	mockFeedClient := new(mockFeedClient)
-	
+
 	// Create a real Redis client for the test server
 	rdb := redis.NewClient(&redis.Options{
 		Addr: "localhost:6379",
