@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -309,14 +311,30 @@ func (s *server) freezeCardHandler(c echo.Context) error {
 
 // --- Disco Payment Gateway Handlers ---
 
+// getUserIDFromContext extracts the authenticated user ID from the request context
+// This assumes that an authentication middleware has been set up to add the user ID to the context
+func getUserIDFromContext(ctx context.Context) (string, error) {
+	// The actual implementation will depend on how the auth middleware stores the user ID
+	// This is a simplified example - in a real app, you might use JWT claims or a custom context key
+	userID, ok := ctx.Value("user_id").(string)
+	if !ok || userID == "" {
+		return "", errors.New("user not authenticated")
+	}
+	return userID, nil
+}
+
 func (s *server) createDiscoSessionHandler(c echo.Context) error {
 	req := new(discopb.CreateSessionRequest)
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request body"})
 	}
 
-	// TODO: Extract user_id from auth context instead of request body if applicable
-	// req.UserId = ...
+	// Extract user_id from auth context
+	userID, err := getUserIDFromContext(c.Request().Context())
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "authentication required"})
+	}
+	req.UserId = userID
 
 	resp, err := s.discoClient.CreateSession(c.Request().Context(), req)
 	if err != nil {
@@ -348,8 +366,11 @@ func (s *server) getDiscoSessionByIdHandler(c echo.Context) error {
 }
 
 func (s *server) listDiscoSessionsHandler(c echo.Context) error {
-	// Extract query params (user_id, status, limit, cursor)
-	userID := c.QueryParam("user_id") // TODO: Get user_id from auth context?
+	// Get user_id from auth context
+	userID, err := getUserIDFromContext(c.Request().Context())
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "authentication required"})
+	}
 	statusFilter := c.QueryParam("status")
 	cursor := c.QueryParam("cursor")
 	limitStr := c.QueryParam("limit")
@@ -398,7 +419,13 @@ func (s *server) createDiscoWalletHandler(c echo.Context) error {
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request body"})
 	}
-	// TODO: Extract user_id from auth context
+
+	// Extract user_id from auth context
+	userID, err := getUserIDFromContext(c.Request().Context())
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "authentication required"})
+	}
+	req.UserId = userID
 
 	resp, err := s.discoClient.CreateWallet(c.Request().Context(), req)
 	if err != nil {

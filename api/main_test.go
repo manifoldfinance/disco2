@@ -297,7 +297,189 @@ func TestGetBalanceHandler_NotFound(t *testing.T) {
 	mockBalance.AssertExpectations(t)
 }
 
-// TODO: Add tests for getFeedHandler (more complex due to enrichment)
+// --- Feed Handler Tests ---
+
+func TestGetFeedHandler_Success(t *testing.T) {
+	s, _, mockFeed, mockTxn, mockMerchant, _, _ := newTestServer(t)
+
+	accountID := "acc-feed-1"
+	feedItemID1 := "feed-item-1"
+	feedItemID2 := "feed-item-2"
+	txnID1 := "txn-1"
+	merchantID1 := "merch-1"
+
+	// Mock FeedClient.ListFeedItems
+	mockFeedItems := &feedpb.FeedItems{
+		Items: []*feedpb.FeedItem{
+			{Id: feedItemID1, AccountId: accountID, Type: "TRANSACTION", RefId: txnID1, Timestamp: "2023-01-01T10:00:00Z", Content: "Coffee Shop"},
+			{Id: feedItemID2, AccountId: accountID, Type: "INFO", RefId: "", Timestamp: "2023-01-01T09:00:00Z", Content: "Welcome message"},
+		},
+	}
+	mockFeed.On("ListFeedItems", mock.Anything, &feedpb.ListFeedItemsRequest{AccountId: accountID, Limit: 0, BeforeId: ""}).
+		Return(mockFeedItems, nil).Once()
+
+	// Mock TransactionsClient.GetTransaction
+	mockTxnData := &transactionspb.Transaction{
+		Id:          txnID1,
+		AccountId:   accountID,
+		Amount:      -500,
+		Currency:    "GBP",
+		Status:      "SETTLED",
+		MerchantId:  merchantID1,
+		MerchantRaw: "COFFEE SHOP LONDON",
+		Category:    "Food & Drink",
+	}
+	mockTxn.On("GetTransaction", mock.Anything, &transactionspb.TransactionQuery{Id: txnID1}).
+		Return(mockTxnData, nil).Once()
+
+	// Mock MerchantClient.GetMerchant
+	mockMerchantData := &merchantpb.MerchantData{
+		MerchantId: merchantID1,
+		Name:       "Coffee Shop",
+		Category:   "Food & Drink",
+		LogoUrl:    "http://logo.url/coffee.png",
+		Mcc:        5812,
+	}
+	mockMerchant.On("GetMerchant", mock.Anything, &merchantpb.MerchantID{MerchantId: merchantID1}).
+		Return(mockMerchantData, nil).Once()
+
+	// Setup Echo context
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/feed/"+accountID, nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetParamNames("account_id")
+	c.SetParamValues(accountID)
+
+	// Call handler
+	err := s.getFeedHandler(c)
+
+	// Assertions
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, rec.Code)
+
+	// Assert response body structure and content
+	var resp map[string]interface{}
+	err = json.Unmarshal(rec.Body.Bytes(), &resp)
+	assert.NoError(t, err)
+	assert.Contains(t, resp, "items")
+	items, ok := resp["items"].([]interface{})
+	assert.True(t, ok)
+	assert.Len(t, items, 2)
+
+	// Check enriched transaction item
+	item1, ok1 := items[0].(map[string]interface{})
+	assert.True(t, ok1)
+	assert.Equal(t, feedItemID1, item1["id"])
+	assert.Equal(t, "TRANSACTION", item1["type"])
+	assert.Contains(t, item1, "transaction")
+	txnDetails, okTxn := item1["transaction"].(map[string]interface{})
+	assert.True(t, okTxn)
+	assert.Equal(t, txnID1, txnDetails["id"])
+	assert.Equal(t, float64(-500), txnDetails["amount"]) // JSON numbers are float64
+	assert.Contains(t, item1, "merchant")
+	merchantDetails, okMerch := item1["merchant"].(map[string]interface{})
+	assert.True(t, okMerch)
+	assert.Equal(t, merchantID1, merchantDetails["id"])
+	assert.Equal(t, "Coffee Shop", merchantDetails["name"])
+
+	// Check info item
+	item2, ok2 := items[1].(map[string]interface{})
+	assert.True(t, ok2)
+	assert.Equal(t, feedItemID2, item2["id"])
+	assert.Equal(t, "INFO", item2["type"])
+	assert.NotContains(t, item2, "transaction")
+	assert.NotContains(t, item2, "merchant")
+
+	// Assert mock calls
+	mockFeed.AssertExpectations(t)
+	mockTxn.AssertExpectations(t)
+	mockMerchant.AssertExpectations(t)
+}
+
+func TestGetFeedHandler_FeedError(t *testing.T) {
+	s, _, mockFeed, _, _, _, _ := newTestServer(t)
+
+	accountID := "acc-feed-err"
+	expectedError := status.Error(codes.Internal, "feed service down")
+
+	// Mock FeedClient.ListFeedItems to return an error
+	mockFeed.On("ListFeedItems", mock.Anything, &feedpb.ListFeedItemsRequest{AccountId: accountID, Limit: 0, BeforeId: ""}).
+		Return(nil, expectedError).Once()
+
+	// Setup Echo context
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/feed/"+accountID, nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetParamNames("account_id")
+	c.SetParamValues(accountID)
+
+	// Call handler
+	err := s.getFeedHandler(c)
+
+	// Assertions
+	assert.NoError(t, err) // Echo handles the error
+	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+	assert.Contains(t, rec.Body.String(), "failed to get feed items")
+
+	mockFeed.AssertExpectations(t)
+}
+
+func TestGetFeedHandler_TransactionError(t *testing.T) {
+	s, _, mockFeed, mockTxn, _, _, _ := newTestServer(t)
+
+	accountID := "acc-txn-err"
+	feedItemID1 := "feed-item-txn-err"
+	txnID1 := "txn-err"
+
+	// Mock FeedClient.ListFeedItems
+	mockFeedItems := &feedpb.FeedItems{
+		Items: []*feedpb.FeedItem{
+			{Id: feedItemID1, AccountId: accountID, Type: "TRANSACTION", RefId: txnID1, Timestamp: "2023-01-01T10:00:00Z", Content: "Error Shop"},
+		},
+	}
+	mockFeed.On("ListFeedItems", mock.Anything, &feedpb.ListFeedItemsRequest{AccountId: accountID, Limit: 0, BeforeId: ""}).
+		Return(mockFeedItems, nil).Once()
+
+	// Mock TransactionsClient.GetTransaction to return an error
+	expectedTxnError := status.Error(codes.NotFound, "transaction not found")
+	mockTxn.On("GetTransaction", mock.Anything, &transactionspb.TransactionQuery{Id: txnID1}).
+		Return(nil, expectedTxnError).Once()
+
+	// Setup Echo context
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/feed/"+accountID, nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetParamNames("account_id")
+	c.SetParamValues(accountID)
+
+	// Call handler
+	err := s.getFeedHandler(c)
+
+	// Assertions
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, rec.Code) // Handler continues even if enrichment fails
+
+	// Assert response body structure and content (item should be present but without enrichment)
+	var resp map[string]interface{}
+	err = json.Unmarshal(rec.Body.Bytes(), &resp)
+	assert.NoError(t, err)
+	assert.Contains(t, resp, "items")
+	items, ok := resp["items"].([]interface{})
+	assert.True(t, ok)
+	assert.Len(t, items, 1)
+	item1, ok1 := items[0].(map[string]interface{})
+	assert.True(t, ok1)
+	assert.Equal(t, feedItemID1, item1["id"])
+	assert.NotContains(t, item1, "transaction") // Enrichment failed
+	assert.NotContains(t, item1, "merchant")
+
+	// Assert mock calls
+	mockFeed.AssertExpectations(t)
+	mockTxn.AssertExpectations(t)
+}
 
 // --- Cards Handlers ---
 
